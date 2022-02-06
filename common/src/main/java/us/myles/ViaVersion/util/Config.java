@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.lang.reflect.Field;
@@ -50,7 +49,7 @@ public abstract class Config implements ConfigurationProvider {
 
     private CommentStore commentStore = new CommentStore('.', 1);
     private final File configFile;
-    private ConcurrentSkipListMap<String, Object> config;
+    private Map<String, Object> config;
 
     /**
      * Create a new Config instance, this will *not* load the config by default.
@@ -67,7 +66,7 @@ public abstract class Config implements ConfigurationProvider {
 	private static Map<String, Object> read_from_json(Gson gson, InputStream stream) {
 		JsonReader reader = new JsonReader(new InputStreamReader(stream));
 		reader.setLenient(true);
-		return (Map<String, Object>)gson.fromJson(reader, ConcurrentSkipListMap.class);
+		return (Map<String, Object>)gson.fromJson(reader, Map.class);
 	}
 
     public synchronized Map<String, Object> loadConfig(File location) {
@@ -146,7 +145,9 @@ public abstract class Config implements ConfigurationProvider {
 
     public synchronized void saveConfig(File location, Map<String, Object> config) {
         try {
-            commentStore.writeComments(to_json(GSON.get(), config), location);
+		synchronized(config) {
+			commentStore.writeComments(to_json(GSON.get(), config), location);
+		}
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -156,7 +157,9 @@ public abstract class Config implements ConfigurationProvider {
 
     @Override
     public void set(String path, Object value) {
-        config.put(path, value);
+		synchronized(config) {
+			config.put(path, value);
+		}
     }
 
     @Override
@@ -168,7 +171,7 @@ public abstract class Config implements ConfigurationProvider {
     @Override
     public void reloadConfig() {
         this.configFile.getParentFile().mkdirs();
-        this.config = new ConcurrentSkipListMap<>(loadConfig(this.configFile));
+        this.config = loadConfig(this.configFile);
     }
 
     @Override
@@ -177,64 +180,50 @@ public abstract class Config implements ConfigurationProvider {
     }
 
     public <T> T get(String key, Class<T> clazz, T def) {
-        Object o = this.config.get(key);
-        if (o != null) {
-            return (T) o;
-        } else {
-            return def;
-        }
+		Object o;
+		synchronized(config) {
+			o = this.config.get(key);
+		}
+		return o == null ? def : (T)o;
     }
 
     public boolean getBoolean(String key, boolean def) {
-        Object o = this.config.get(key);
-        if (o != null) {
-            return (boolean) o;
-        } else {
-            return def;
-        }
+		Object o;
+		synchronized(config) {
+			o = this.config.get(key);
+		}
+		return o == null ? def : ((Boolean)o).booleanValue();
     }
 
     public String getString(String key, String def) {
-        final Object o = this.config.get(key);
-        if (o != null) {
-            return (String) o;
-        } else {
-            return def;
-        }
+		Object o;
+		synchronized(config) {
+			o = this.config.get(key);
+		}
+		return o == null ? def : (String)o;
     }
 
     public int getInt(String key, int def) {
-        Object o = this.config.get(key);
-        if (o != null) {
-            if (o instanceof Number) {
-                return ((Number) o).intValue();
-            } else {
-                return def;
-            }
-        } else {
-            return def;
-        }
+		Object o;
+		synchronized(config) {
+			o = this.config.get(key);
+		}
+		return o instanceof Number ? ((Number)o).intValue() : def;
     }
 
     public double getDouble(String key, double def) {
-        Object o = this.config.get(key);
-        if (o != null) {
-            if (o instanceof Number) {
-                return ((Number) o).doubleValue();
-            } else {
-                return def;
-            }
-        } else {
-            return def;
-        }
+		Object o;
+		synchronized(config) {
+			o = this.config.get(key);
+		}
+		return o instanceof Number ? ((Number)o).doubleValue() : def;
     }
 
     public List<Integer> getIntegerList(String key) {
-        Object o = this.config.get(key);
-        if (o != null) {
-            return (List<Integer>) o;
-        } else {
-            return new ArrayList<>();
-        }
+		Object o;
+		synchronized(config) {
+			o = this.config.get(key);
+		}
+		return o == null ? new ArrayList<Integer>() : (List<Integer>)o;
     }
 }
