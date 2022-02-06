@@ -17,7 +17,7 @@ public class SpongeViaConfig extends Config implements ViaVersionConfig {
     private final PluginContainer pluginContainer;
 
     public SpongeViaConfig(PluginContainer pluginContainer, File configFile) {
-        super(new File(configFile, "config.yml"));
+        super(new File(configFile, "config"));
         this.pluginContainer = pluginContainer;
         // Load config
         reloadConfig();
@@ -25,7 +25,7 @@ public class SpongeViaConfig extends Config implements ViaVersionConfig {
 
     @Override
     public URL getDefaultConfigURL() {
-        Optional<Asset> config = pluginContainer.getAsset("config.yml");
+        Optional<Asset> config = pluginContainer.getAsset("config");
         if (!config.isPresent()) {
             throw new IllegalArgumentException("Default config is missing from jar");
         }

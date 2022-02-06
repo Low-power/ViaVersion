@@ -1,10 +1,10 @@
 package us.myles.ViaVersion.util;
 
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.representer.Representer;
 import us.myles.ViaVersion.api.configuration.ConfigurationProvider;
-
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
@@ -12,20 +12,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.lang.reflect.Field;
 
 public abstract class Config implements ConfigurationProvider {
-    private static final ThreadLocal<Yaml> YAML = new ThreadLocal<Yaml>() {
-        @Override
-        protected Yaml initialValue() {
-            DumperOptions options = new DumperOptions();
-            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-            options.setPrettyFlow(false);
-            options.setIndent(2);
-            return new Yaml(new YamlConstructor(), new Representer(), options);
-        }
-    };
+	private static final ThreadLocal<Gson> GSON = new ThreadLocal<Gson>() {
+		@Override
+		protected Gson initialValue() {
+			String date_time_format_pattern = get_date_format_pattern() + " HH:mm:ss";
+			return (new GsonBuilder()).disableHtmlEscaping().setDateFormat(date_time_format_pattern).setPrettyPrinting().create();
+		}
+	};
 
-    private CommentStore commentStore = new CommentStore('.', 2);
+	private static Field jsonwriter_indent_field;
+	private static Field jsonwriter_separator_field;
+	static {
+		try {
+			jsonwriter_indent_field = JsonWriter.class.getDeclaredField("indent");
+			jsonwriter_indent_field.setAccessible(true);
+		} catch(NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		try {
+			jsonwriter_separator_field = JsonWriter.class.getDeclaredField("separator");
+			jsonwriter_separator_field.setAccessible(true);
+		} catch(NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static String get_date_format_pattern() {
+		DateFormat date_format = DateFormat.getDateInstance(DateFormat.DEFAULT);
+		return date_format instanceof SimpleDateFormat ?
+			((SimpleDateFormat)date_format).toPattern() : "d MMM yyyy";
+	}
+
+    private CommentStore commentStore = new CommentStore('.', 1);
     private final File configFile;
     private ConcurrentSkipListMap<String, Object> config;
 
@@ -40,6 +63,12 @@ public abstract class Config implements ConfigurationProvider {
     }
 
     public abstract URL getDefaultConfigURL();
+
+	private static Map<String, Object> read_from_json(Gson gson, InputStream stream) {
+		JsonReader reader = new JsonReader(new InputStreamReader(stream));
+		reader.setLenient(true);
+		return (Map<String, Object>)gson.fromJson(reader, ConcurrentSkipListMap.class);
+	}
 
     public synchronized Map<String, Object> loadConfig(File location) {
         List<String> unsupported = getUnsupportedOptions();
@@ -58,7 +87,7 @@ public abstract class Config implements ConfigurationProvider {
         Map<String, Object> config = null;
         if (location.exists()) {
             try (FileInputStream input = new FileInputStream(location)) {
-                config = (Map<String, Object>) YAML.get().load(input);
+                config = read_from_json(GSON.get(), input);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -71,7 +100,7 @@ public abstract class Config implements ConfigurationProvider {
 
         Map<String, Object> defaults = config;
         try (InputStream stream = jarConfigFile.openStream()) {
-            defaults = (Map<String, Object>) YAML.get().load(stream);
+            defaults = read_from_json(GSON.get(), stream);
             for (String option : unsupported) {
                 defaults.remove(option);
             }
@@ -95,9 +124,29 @@ public abstract class Config implements ConfigurationProvider {
 
     protected abstract void handleConfig(Map<String, Object> config);
 
+	private static String to_json(Gson gson, Map<String, Object> obj) {
+		StringWriter buffer = new StringWriter();
+		JsonWriter writer = new JsonWriter(buffer);
+		try {
+			if(jsonwriter_indent_field != null) {
+				jsonwriter_indent_field.set(writer, " ");
+			} else {
+				writer.setIndent(" ");
+			}
+			if(jsonwriter_separator_field != null) {
+				jsonwriter_separator_field.set(writer, ":");
+			}
+		} catch(IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+		writer.setSerializeNulls(false);
+		gson.toJson(obj, Map.class, writer);
+		return buffer.toString();
+	}
+
     public synchronized void saveConfig(File location, Map<String, Object> config) {
         try {
-            commentStore.writeComments(YAML.get().dump(config), location);
+            commentStore.writeComments(to_json(GSON.get(), config), location);
         } catch (IOException e) {
             e.printStackTrace();
         }

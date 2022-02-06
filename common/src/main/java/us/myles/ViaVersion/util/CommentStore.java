@@ -115,7 +115,7 @@ public class CommentStore {
         }
     }
 
-    public void writeComments(String yaml, File output) throws IOException {
+    public void writeComments(String body, File output) throws IOException {
         // Custom save
         final int indentLength = this.indents;
         final String pathSeparator = Character.toString(this.pathSeperator);
@@ -127,7 +127,7 @@ public class CommentStore {
             fileData.append("#> ").append(h).append('\n');
         }
 
-        for (String line : yaml.split("\n")) {
+        for (String line : body.split("\n")) {
             if (line.isEmpty()) continue; // Skip empty lines
             int indent = getSuccessiveCharCount(line, ' ');
             int indents = indent / indentLength;

@@ -15,7 +15,7 @@ public class BukkitViaConfig extends Config implements ViaVersionConfig {
     private static List<String> UNSUPPORTED = Arrays.asList("bungee-ping-interval", "bungee-ping-save", "bungee-servers", "velocity-ping-interval", "velocity-ping-save", "velocity-servers");
 
     public BukkitViaConfig() {
-        super(new File(((ViaVersionPlugin) Via.getPlatform()).getDataFolder(), "config.yml"));
+        super(new File(((ViaVersionPlugin) Via.getPlatform()).getDataFolder(), "config"));
         // Load config
         reloadConfig();
     }
@@ -192,7 +192,7 @@ public class BukkitViaConfig extends Config implements ViaVersionConfig {
 
     @Override
     public URL getDefaultConfigURL() {
-        return BukkitViaConfig.class.getClassLoader().getResource("assets/viaversion/config.yml");
+        return BukkitViaConfig.class.getClassLoader().getResource("assets/viaversion/config");
     }
 
     @Override

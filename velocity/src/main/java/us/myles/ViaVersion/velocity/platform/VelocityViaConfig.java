@@ -12,14 +12,14 @@ public class VelocityViaConfig extends Config implements ViaVersionConfig {
     private static List<String> UNSUPPORTED = Arrays.asList("nms-player-ticking", "item-cache", "anti-xray-patch", "quick-move-action-fix", "bungee-ping-interval", "bungee-ping-save", "bungee-servers", "blockconnection-method", "change-1_9-hitbox", "change-1_14-hitbox");
 
     public VelocityViaConfig(File configFile) {
-        super(new File(configFile, "config.yml"));
+        super(new File(configFile, "config"));
         // Load config
         reloadConfig();
     }
 
     @Override
     public URL getDefaultConfigURL() {
-        return getClass().getClassLoader().getResource("assets/viaversion/config.yml");
+        return getClass().getClassLoader().getResource("assets/viaversion/config");
     }
 
     @Override

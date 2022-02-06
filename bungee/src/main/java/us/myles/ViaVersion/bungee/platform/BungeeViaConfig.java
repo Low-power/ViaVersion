@@ -13,14 +13,14 @@ public class BungeeViaConfig extends Config implements ViaVersionConfig {
     private static List<String> UNSUPPORTED = Arrays.asList("nms-player-ticking", "item-cache", "anti-xray-patch", "quick-move-action-fix", "velocity-ping-interval", "velocity-ping-save", "velocity-servers", "blockconnection-method", "change-1_9-hitbox", "change-1_14-hitbox");
 
     public BungeeViaConfig(File configFile) {
-        super(new File(configFile, "config.yml"));
+        super(new File(configFile, "config"));
         // Load config
         reloadConfig();
     }
 
     @Override
     public URL getDefaultConfigURL() {
-        return BungeeViaConfig.class.getClassLoader().getResource("assets/viaversion/config.yml");
+        return BungeeViaConfig.class.getClassLoader().getResource("assets/viaversion/config");
     }
 
     @Override

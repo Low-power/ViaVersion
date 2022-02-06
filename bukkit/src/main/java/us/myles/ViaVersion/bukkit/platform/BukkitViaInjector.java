@@ -97,8 +97,8 @@ public class BukkitViaInjector implements ViaInjector {
                 // let's find who to blame!
                 ClassLoader cl = bootstrapAcceptor.getClass().getClassLoader();
                 if (cl.getClass().getName().equals("org.bukkit.plugin.java.PluginClassLoader")) {
-                    PluginDescriptionFile yaml = ReflectionUtil.get(cl, "description", PluginDescriptionFile.class);
-                    throw new Exception("Unable to inject, due to " + bootstrapAcceptor.getClass().getName() + ", try without the plugin " + yaml.getName() + "?");
+                    PluginDescriptionFile desc = ReflectionUtil.get(cl, "description", PluginDescriptionFile.class);
+                    throw new Exception("Unable to inject, due to " + bootstrapAcceptor.getClass().getName() + ", try without the plugin " + desc.getName() + "?");
                 } else {
                     throw new Exception("Unable to find core component 'childHandler', please check your plugins. issue: " + bootstrapAcceptor.getClass().getName());
                 }
