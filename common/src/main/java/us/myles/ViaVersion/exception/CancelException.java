@@ -1,7 +1,7 @@
 package us.myles.ViaVersion.exception;
 
 public class CancelException extends Exception {
-    public static final CancelException CACHED = new CancelException("Cached - Enable /viaver debug to not use cached exception") {
+    public static final CancelException CACHED = new CancelException("Cached - Enable /viaversion debug to not use cached exception") {
         @Override
         public synchronized Throwable fillInStackTrace() {
             return this;

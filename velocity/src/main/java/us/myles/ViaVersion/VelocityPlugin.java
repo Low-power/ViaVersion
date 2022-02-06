@@ -63,7 +63,7 @@ public class VelocityPlugin implements ViaPlatform<Player> {
     public void onProxyInit(ProxyInitializeEvent e) {
         PROXY = proxy;
         VelocityCommandHandler commandHandler = new VelocityCommandHandler();
-        PROXY.getCommandManager().register(commandHandler, "viaver", "vvvelocity", "viaversion");
+        PROXY.getCommandManager().register(commandHandler, "viaversion");
         api = new VelocityViaAPI();
         conf = new VelocityViaConfig(configDir.toFile());
         logger = new LoggerWrapper(loggerslf4j);

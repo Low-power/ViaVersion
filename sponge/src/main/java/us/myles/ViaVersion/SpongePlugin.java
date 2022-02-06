@@ -67,7 +67,7 @@ public class SpongePlugin implements ViaPlatform {
         // Setup Plugin
         conf = new SpongeViaConfig(container, defaultConfig.getParentFile());
         SpongeCommandHandler commandHandler = new SpongeCommandHandler();
-        game.getCommandManager().register(this, commandHandler, "viaversion", "viaver", "vvsponge");
+        game.getCommandManager().register(this, commandHandler, "viaversion");
         getLogger().info("ViaVersion " + getPluginVersion() + " is now loaded!");
         // Init platform
         Via.init(ViaManager.builder()
