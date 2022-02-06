@@ -79,15 +79,15 @@ public class CommentStore {
             if (line.isEmpty()) continue; // Skip empty lines
             int indent = getSuccessiveCharCount(line, ' ');
             String subline = indent > 0 ? line.substring(indent) : line;
-            if (subline.startsWith("#")) {
-                if (subline.startsWith("#>")) {
-                    String txt = subline.startsWith("#> ") ? subline.substring(3) : subline.substring(2);
+            if (subline.startsWith("//")) {
+                if (subline.startsWith("//>")) {
+                    String txt = subline.startsWith("//> ") ? subline.substring(4) : subline.substring(3);
                     mainHeader.add(txt);
                     continue; // Main header, handled by bukkit
                 }
 
                 // Add header to list
-                String txt = subline.startsWith("# ") ? subline.substring(2) : subline.substring(1);
+                String txt = subline.startsWith("// ") ? subline.substring(3) : subline.substring(2);
                 headers.add(txt);
                 continue;
             }
@@ -124,7 +124,7 @@ public class CommentStore {
         String key = "";
         for (String h : mainHeader) {
             // Append main header to top of file
-            fileData.append("#> ").append(h).append('\n');
+            fileData.append("//> ").append(h).append('\n');
         }
 
         for (String line : body.split("\n")) {
@@ -170,7 +170,7 @@ public class CommentStore {
     private String addHeaderTags(List<String> header, String indent) {
         StringBuilder builder = new StringBuilder();
         for (String line : header) {
-            builder.append(indent).append("# ").append(line).append('\n');
+            builder.append(indent).append("// ").append(line).append('\n');
         }
         return builder.toString();
     }
