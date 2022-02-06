@@ -36,7 +36,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Class-Path>libs/viaversion-common-${project.parent.version}.jar</Class-Path>
+							<Class-Path>libs/viaversion-common-${project.parent.version}.jar libs/javassist.jar libs/steveice10.opennbt.jar</Class-Path>
 						</manifestEntries>
 					</archive>
 				</configuration>
