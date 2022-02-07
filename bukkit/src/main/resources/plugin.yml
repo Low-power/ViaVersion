@@ -1,5 +1,5 @@
 {
- "name":"ViaVersion",
+ "name":"viaversion",
  "main":"us.myles.ViaVersion.ViaVersionPlugin",
  "authors":["_MylesC", "creeper123123321", "Gerrygames", "KennyTV", "Matsv"],
  "version":"${project.version}",
@@ -9,7 +9,7 @@
  "softdepend":["ProtocolSupport", "PacketListenerApi"],
  "commands":{
   "viaversion":{
-   "description":"Shows ViaVersion Version and more."
+   "description":"Shows ViaVersion version and more."
   }
  }
 }

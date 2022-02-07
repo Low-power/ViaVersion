@@ -61,7 +61,7 @@ public class BukkitViaLoader implements ViaPlatformLoader {
         registerListener(new UpdateListener());
 
         /* Base Protocol */
-        final ViaVersionPlugin plugin = (ViaVersionPlugin) Bukkit.getPluginManager().getPlugin("ViaVersion");
+        final ViaVersionPlugin plugin = (ViaVersionPlugin) Bukkit.getPluginManager().getPlugin("viaversion");
 
         // Add ProtocolSupport ConnectListener if necessary.
         ClassGenerator.registerPSConnectListener(plugin);
@@ -119,7 +119,7 @@ public class BukkitViaLoader implements ViaPlatformLoader {
                     return HandItemCache.getHandItem(info.get(ProtocolInfo.class).getUuid());
                 } else {
                     try {
-                        return Bukkit.getScheduler().callSyncMethod(Bukkit.getPluginManager().getPlugin("ViaVersion"), new Callable<Item>() {
+                        return Bukkit.getScheduler().callSyncMethod(Bukkit.getPluginManager().getPlugin("viaversion"), new Callable<Item>() {
                             @Override
                             public Item call() throws Exception {
                                 UUID playerUUID = info.get(ProtocolInfo.class).getUuid();

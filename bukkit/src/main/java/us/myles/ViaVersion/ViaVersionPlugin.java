@@ -224,7 +224,7 @@ public class ViaVersionPlugin extends JavaPlugin implements ViaPlatform {
 
     @Override
     public boolean isPluginEnabled() {
-        return Bukkit.getPluginManager().getPlugin("ViaVersion").isEnabled();
+        return Bukkit.getPluginManager().getPlugin("viaversion").isEnabled();
     }
 
     @Override
