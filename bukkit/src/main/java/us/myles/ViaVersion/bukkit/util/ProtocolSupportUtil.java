@@ -20,9 +20,11 @@ public class ProtocolSupportUtil {
 
     public static int getProtocolVersion(Player player) {
         if (protocolVersionMethod == null) return -1;
+		if(getIdMethod == null) return -1;
         try {
             Object version = protocolVersionMethod.invoke(null, player);
-            return (int) getIdMethod.invoke(version);
+			Integer id = (Integer)getIdMethod.invoke(version);
+			return id.intValue();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
